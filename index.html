@@ -20,29 +20,30 @@
         <p>Step 1: Generate log command</p>
         <p><b>Filter: </b></p>
         <label for="from">From: </label>
-        <input type="date" id ="from"/>
+        <input type="date" id ="from" oninput="generate()"/>
         <label for="to">To: </label>
-        <input type="date" id ="to"/>
+        <input type="date" id ="to" oninput="generate()"/>
         <label for="authors">Authors: </label>
-        <input type="text" id ="authors" placeholder="separate with /"/>
+        <input type="text" id ="authors" placeholder="separate with /" oninput="generate()"/>
 
-        <p><b>Include: </b></p>
-        <input type="checkbox" id ="date"/>
+        <p><b>Format: </b></p>
+        <label>Include: </label>
+        <input type="checkbox" id ="date" oninput="generate()"/>
         <label for="date">Date</label>
-        <input type="checkbox" id ="hash"/>
+        <input type="checkbox" id ="hash" oninput="generate()"/>
         <label for="hash">Hash</label>
-        <input type="checkbox" id ="author"/>
+        <input type="checkbox" id ="author" oninput="generate()"/>
         <label for="author">Author</label>
-        <input type="checkbox" id ="message"/>
+        <input type="checkbox" id ="message" oninput="generate()"/>
         <label for="message">Message</label>
         <p></p>
         <label for="advanced">Advanced: </label>
-        <input type="text" id ="advanced" placeholder="overrides options above"/>
+        <input type="text" id ="advanced" placeholder="overrides options above" oninput="generate()"/>
         <label for="advanced">(<a href="https://git-scm.com/docs/pretty-formats#:~:text=no%2Dabbrev.-,format%3A%3Cformat%2Dstring%3E,-The%20format%3A%3Cformat">docs</a>)</label>
         <p><b>Options: </b></p>
-        <input type="checkbox" id ="copy"/>
+        <input type="checkbox" id ="copy" oninput="generate()"/>
         <label for="copy">Copy to clipboard on Windows</label>
-        <button onclick="generate()">Go</button>
+        <p><b>Output: </b></p>
         <p id="command">Command will be shown here</p>
 
 
@@ -55,7 +56,6 @@
     </body>
 </html>
 <script>
-    let output;
     document.addEventListener("DOMContentLoaded", ()=>{
 
     });
