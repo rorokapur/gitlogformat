@@ -15,7 +15,7 @@
             width: fit-content;
         }
     </style>
-    <body>
+    <body> 
         <h1>Git Log Format</h1>
         <p>Step 1: Generate log command</p>
         <p><b>Filter: </b></p>
@@ -25,6 +25,11 @@
         <input type="date" id ="to" oninput="generate()"/>
         <label for="authors">Authors: </label>
         <input type="text" id ="authors" placeholder="separate with /" oninput="generate()"/>
+        <p></p>
+        <input type="checkbox" id ="merge" oninput="generate()"/>
+        <label for="merge">Exclude merge commits</label>
+        <input type="checkbox" id ="all" oninput="generate()"/>
+        <label for="all">Show commits from all branches</label>
 
         <p><b>Format: </b></p>
         <label>Include: </label>
@@ -40,6 +45,8 @@
         <label for="advanced">Advanced: </label>
         <input type="text" id ="advanced" placeholder="overrides options above" oninput="generate()"/>
         <label for="advanced">(<a href="https://git-scm.com/docs/pretty-formats#:~:text=no%2Dabbrev.-,format%3A%3Cformat%2Dstring%3E,-The%20format%3A%3Cformat">docs</a>)</label>
+        <p>(Leave all blank for default)</p>
+        
         <p><b>Options: </b></p>
         <input type="checkbox" id ="copy" oninput="generate()"/>
         <label for="copy">Copy to clipboard on Windows</label>
@@ -60,7 +67,25 @@
 
     });
     function generate() {
-        let output = "git log --format='";
+        let output = "git log";
+        if (document.getElementById("all").checked) {
+            output += " --all"
+        }
+        if (document.getElementById("merge").checked) {
+            output += " --no-merges"
+        }
+        if (document.getElementById("authors").value != ""){
+            let names = document.getElementById("authors").value.split("/");
+            for (name in names){
+                output += " --author='"+ names[name] + "'";
+            }
+        }
+        if (document.getElementById("from").value != ""){
+            output += " --since=" + document.getElementById("from").value;
+        }
+        if (document.getElementById("to").value != ""){
+            output += " --until=" + document.getElementById("to").value;
+        }
         let attributes = [];
         if (document.getElementById("date").checked) {
             attributes.push("%as");
@@ -75,21 +100,11 @@
             attributes.push("%s");
         }
         if (document.getElementById("advanced").value == ""){
-            output += attributes.join(" ") + "'";
-        } else {
-            output += document.getElementById("advanced").value + "'";
-        }
-        if (document.getElementById("from").value != ""){
-            output += " --since=" + document.getElementById("from").value;
-        }
-        if (document.getElementById("to").value != ""){
-            output += " --until=" + document.getElementById("to").value;
-        }
-        if (document.getElementById("authors").value != ""){
-            let names = document.getElementById("authors").value.split("/");
-            for (name in names){
-                output += " --author='"+ names[name] + "'";
+            if (attributes.length != 0){
+                output += " --format='" + attributes.join(" ") + "'";
             }
+        } else {
+            output += " --format='" + document.getElementById("advanced").value + "'";
         }
         if (document.getElementById("copy").checked) {
             output += " | clip";
