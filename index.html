@@ -39,14 +39,34 @@
 
         <h3><b>Format: </b></h3>
         <label>Include: </label>
-        <input type="checkbox" id ="date" oninput="generate()"/>
-        <label for="date">Date</label>
-        <input type="checkbox" id ="hash" oninput="generate()"/>
-        <label for="hash">Hash</label>
-        <input type="checkbox" id ="author" oninput="generate()"/>
-        <label for="author">Author</label>
-        <input type="checkbox" id ="message" oninput="generate()"/>
-        <label for="message">Message</label>
+        <select name="format" id="format1" oninput="generate()">
+            <option value = ""></option>
+            <option value="(%an)">Author</option>
+            <option value="%as" selected>Date</option>
+            <option value="%h">Hash</option>
+            <option value="%s">Message</option>
+        </select>
+        <select name="format" id="format2" oninput="generate()">
+            <option value = ""></option>
+            <option value="(%an)">Author</option>
+            <option value="%as">Date</option>
+            <option value="%h" selected>Hash</option>
+            <option value="%s">Message</option>
+        </select>
+        <select name="format" id="format3" oninput="generate()">
+            <option value = ""></option>
+            <option value="(%an)">Author</option>
+            <option value="%as">Date</option>
+            <option value="%h">Hash</option>
+            <option value="%s" selected>Message</option>
+        </select>
+        <select name="format" id="format4" oninput="generate()">
+            <option value = "" selected></option>
+            <option value="(%an)">Author</option>
+            <option value="%as">Date</option>
+            <option value="%h">Hash</option>
+            <option value="%s">Message</option>
+        </select>
         <p></p>
         <label for="advanced">Advanced: </label>
         <input type="text" id ="advanced" placeholder="overrides options above" oninput="generate()"/>
@@ -71,12 +91,19 @@
 
         <p>Step 2 (optional): Link hash to commit on remote repository</p>
         <p>Enter path to commit on remote repository (e.g. https://github.com/user/repo/commit)</p>
-        <label for="url">URL: </label>
+        <label for="url">Base URL: </label>
         <input type="url" id="url" oninput="format()"/>
         <label for="fhs">Hash Separator: </label>
         <input type="text" id ="fhs" placeholder="e.g. ##" oninput="format()"/>
+        <p></p>
+        <label for="linking">Link: </label>
+        <select name="linking" id="linking" oninput="format()">
+            <option value ="hash" selected>Hash only</option>
+            <option value="whole">Entire Line</option>
+            <option value="hashdelete">Entire line + remove hash</option>
+        </select>
         <p>Output from command generated above</p>
-        <textarea id="loginput"  oninput="format()"></textarea>
+        <textarea id="loginput"  oninput="format()" rows="1"></textarea>
 
         <h3><b>Output: </b></h3>
         <pre id="formatted"> </pre>
@@ -110,24 +137,23 @@
         if (document.getElementById("to").value != ""){
             output += " --until=" + document.getElementById("to").value;
         }
-        let attributes = [];
-        if (document.getElementById("date").checked) {
-            attributes.push("%as");
-        }
-        if (document.getElementById("hash").checked) {
-            attributes.push(hs + "%h"+ hs);
-            document.getElementById("fhs").value = hs;
-        }
-        if (document.getElementById("author").checked) {
-            attributes.push("(%an)");
-        }
-        if (document.getElementById("message").checked) {
-            attributes.push("%s");
+        let attributes = "";
+        for (let i = 1; i <= 4; i++){
+            let arg = document.getElementById("format" + i).value;
+            if (arg == "") {continue;}
+            if (i > 1 && attributes != "") {attributes += " "}
+            if (arg == "%h") {
+                hs = document.getElementById("hs").value;
+                attributes += hs + "%h" + hs;
+                document.getElementById("fhs").value = hs;
+                continue;
+            }
+            attributes += arg;
         }
         if (document.getElementById("advanced").value == ""){
             if (attributes.length != 0){
-                output += " --format='" + attributes.join(" ") + "'";
-                logformat = attributes.join(" ");
+                output += " --format='" + attributes + "'";
+                logformat = attributes;
             }
         } else {
             output += " --format='" + document.getElementById("advanced").value + "'";
@@ -143,6 +169,7 @@
     }
     function format(){
         let input = document.getElementById("loginput");
+        let link = document.getElementById("linking").value;
         input.style.height = 0;
         input.style.height = input.scrollHeight + "px";
         let text = input.value;
@@ -175,7 +202,19 @@
             let hash = split[1];
             let before = split[0];
             let after = split[2];
-            pre.innerHTML += (`${before}<a href="${url}${hash}">${hash}</a>${after}\n`);
+            if (link == "hash") {
+                pre.innerHTML += (`${before}<a href="${url}${hash}">${hash}</a>${after}\n`);
+            }
+            if (link == "whole") {
+                pre.innerHTML += (`<a href="${url}${hash}">${before}${hash}${after}</a>\n`);
+            }
+            if (link == "hashdelete") {
+                if (1 == 1){
+                    before = before.slice(0, -1);
+                    after = after.slice(1, after.length);
+                }
+                pre.innerHTML += (`<a href="${url}${hash}">${before} ${after}</a>\n`);
+            }
         }
     }
     function copy(){
