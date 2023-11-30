@@ -14,6 +14,12 @@
             padding: 1rem;
             width: fit-content;
         }
+        #formatted{
+            border: 1px black solid;
+        }
+        #loginput{
+            width: 100%;
+        }
     </style>
     <body> 
         <h1>Git Log Format</h1>
@@ -45,6 +51,10 @@
         <label for="advanced">Advanced: </label>
         <input type="text" id ="advanced" placeholder="overrides options above" oninput="generate()"/>
         <label for="advanced">(<a href="https://git-scm.com/docs/git-log#_options">docs</a>)</label>
+        <p></p>
+        <label for="hs">Hash Separator: </label>
+        <input type="text" id ="hs" placeholder="e.g. ##" oninput="generate()"/>
+        <label for="hs">(see below)</label>
         <p>(Leave all blank for default)</p>
 
         <h3><b>Options: </b></h3>
@@ -62,18 +72,26 @@
         <p>Step 2 (optional): Link hash to commit on remote repository</p>
         <p>Enter path to commit on remote repository (e.g. https://github.com/user/repo/commit)</p>
         <label for="url">URL: </label>
-        <input type="url" id="url" />
+        <input type="url" id="url" oninput="format()"/>
+        <label for="fhs">Hash Separator: </label>
+        <input type="text" id ="fhs" placeholder="e.g. ##" oninput="format()"/>
         <p>Output from command generated above</p>
-        <textarea id="loginput"></textarea>
+        <textarea id="loginput"  oninput="format()"></textarea>
+
+        <h3><b>Output: </b></h3>
+        <pre id="formatted"> </pre>
     </body>
 </html>
 <script>
     let command = "Command will be shown here. Click to copy.";
+    let logformat = "";
+    let hs = "";
     document.addEventListener("DOMContentLoaded", ()=>{
 
     });
     function generate() {
         let output = "git log";
+        hs = document.getElementById("hs").value;
         if (document.getElementById("all").checked) {
             output += " --all"
         }
@@ -97,7 +115,8 @@
             attributes.push("%as");
         }
         if (document.getElementById("hash").checked) {
-            attributes.push("%h");
+            attributes.push(hs + "%h"+ hs);
+            document.getElementById("fhs").value = hs;
         }
         if (document.getElementById("author").checked) {
             attributes.push("(%an)");
@@ -108,9 +127,11 @@
         if (document.getElementById("advanced").value == ""){
             if (attributes.length != 0){
                 output += " --format='" + attributes.join(" ") + "'";
+                logformat = attributes.join(" ");
             }
         } else {
             output += " --format='" + document.getElementById("advanced").value + "'";
+            logformat = document.getElementById("advanced").value;
         }
         output += " " + document.getElementById("args").value;
         if (document.getElementById("copy").checked) {
@@ -119,6 +140,43 @@
         command = output;
         document.getElementById("command").innerHTML = command;
 
+    }
+    function format(){
+        let input = document.getElementById("loginput");
+        input.style.height = 0;
+        input.style.height = input.scrollHeight + "px";
+        let text = input.value;
+        let pre = document.getElementById("formatted");
+        let url = document.getElementById("url").value;
+        let fhs = document.getElementById("fhs").value;
+        pre.innerHTML = "";
+        if (text == ""){
+            pre.innerHTML = " ";
+            return;
+        }
+        if (fhs == "" || url == ""){
+            pre.innerHTML = "Error! You must specify a base URL and hash separator."
+            return;
+        }
+        for (line of text.split("\n")) {
+            let split = line.split(fhs);
+            if (split.length > 3){
+                pre.innerHTML = "Error! Hash separator appears more than twice in one line.\nThis may happen if the hash separator appears in another part of the log output.\nTry making a new log command with a different hash separator."
+                break;
+            }
+            if (split.length == 2){
+                pre.innerHTML = "Error! Hash separator appears only less than twice is some "
+                break;
+            }
+            if (split.length == 1){
+                pre.innerHTML += line + "\n";
+                continue;
+            }
+            let hash = split[1];
+            let before = split[0];
+            let after = split[2];
+            pre.innerHTML += (`${before}<a href="${url}${hash}">${hash}</a>${after}\n`);
+        }
     }
     function copy(){
         let text = document.getElementById("command").innerHTML;
