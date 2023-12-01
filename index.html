@@ -102,6 +102,8 @@
             <option value="whole">Entire Line</option>
             <option value="hashdelete">Entire line + remove hash</option>
         </select>
+        <input type="checkbox" id ="deletespace" oninput="format()" checked = "true" hidden/>
+        <label for="deletespace" id="dslabel" hidden>Remove spaces around hash and replace with single space</label>
         <p>Output from command generated above</p>
         <textarea id="loginput"  oninput="format()" rows="1"></textarea>
 
@@ -176,7 +178,15 @@
         let pre = document.getElementById("formatted");
         let url = document.getElementById("url").value;
         let fhs = document.getElementById("fhs").value;
+        let DELETE_SPACE = document.getElementById("deletespace").checked;
         pre.innerHTML = "";
+        if (link == "hashdelete"){
+            document.getElementById("deletespace").removeAttribute("hidden");
+            document.getElementById("dslabel").removeAttribute("hidden");
+        } else {
+            document.getElementById("deletespace").setAttribute("hidden", "");
+            document.getElementById("dslabel").setAttribute("hidden", "");
+        }
         if (text == ""){
             pre.innerHTML = " ";
             return;
@@ -209,11 +219,15 @@
                 pre.innerHTML += (`<a href="${url}${hash}">${before}${hash}${after}</a>\n`);
             }
             if (link == "hashdelete") {
-                if (1 == 1){
+                if (DELETE_SPACE){
                     before = before.slice(0, -1);
                     after = after.slice(1, after.length);
                 }
-                pre.innerHTML += (`<a href="${url}${hash}">${before} ${after}</a>\n`);
+                if (before != "" && after != "" && DELETE_SPACE) {
+                    pre.innerHTML += (`<a href="${url}${hash}">${before} ${after}</a>\n`);
+                } else {
+                    pre.innerHTML += (`<a href="${url}${hash}">${before}${after}</a>\n`);
+                }
             }
         }
     }
