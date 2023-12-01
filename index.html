@@ -24,14 +24,19 @@
     <body> 
         <h1>Git Log Format</h1>
         <p>A tool to git log commands with custom filtering, sorting, and formatting and add hyperlinks to the output.</p>
-        <h3><b>Filter: </b></h3>
+        <h3><b>Filter & Sort: </b></h3>
         <label for="from">From: </label>
         <input type="date" id ="from" oninput="generate()"/>
         <label for="to">To: </label>
         <input type="date" id ="to" oninput="generate()"/>
+        <label>Order: </label>
+        <select name="order" id="order" oninput="generate()">
+            <option value ="" selected>Newest to Oldest</option>
+            <option value=" --reverse">Oldest to Newest</option>
+        </select>
+        <p></p>
         <label for="authors">Authors: </label>
         <input type="text" id ="authors" placeholder="separate with /" oninput="generate()"/>
-        <p></p>
         <input type="checkbox" id ="merge" oninput="generate()"/>
         <label for="merge">Exclude merge commits</label>
         <input type="checkbox" id ="all" oninput="generate()"/>
@@ -132,6 +137,7 @@
         if (document.getElementById("merge").checked) {
             output += " --no-merges"
         }
+        output += document.getElementById("order").value;
         if (document.getElementById("authors").value != ""){
             let names = document.getElementById("authors").value.split("/");
             for (name in names){
