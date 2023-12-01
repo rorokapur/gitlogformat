@@ -172,7 +172,9 @@
             output += " --format='" + document.getElementById("advanced").value + "'";
             logformat = document.getElementById("advanced").value;
         }
-        output += " " + document.getElementById("args").value;
+        if(document.getElementById("args").value != ""){
+            output += " " + document.getElementById("args").value;
+        }
         if (document.getElementById("copy").checked) {
             output += " | clip";
         }
