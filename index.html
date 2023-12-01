@@ -14,7 +14,7 @@
             padding: 1rem;
             width: fit-content;
         }
-        #formatted{
+        #formatted, #htmlcode{
             border: 1px black solid;
         }
         #loginput{
@@ -23,7 +23,7 @@
     </style>
     <body> 
         <h1>Git Log Format</h1>
-        <p>Step 1: Generate log command</p>
+        <p>A tool to git log commands with custom filtering, sorting, and formatting and add hyperlinks to the output.</p>
         <h3><b>Filter: </b></h3>
         <label for="from">From: </label>
         <input type="date" id ="from" oninput="generate()"/>
@@ -70,7 +70,7 @@
         <p></p>
         <label for="advanced">Advanced: </label>
         <input type="text" id ="advanced" placeholder="overrides options above" oninput="generate()"/>
-        <label for="advanced">(<a href="https://git-scm.com/docs/git-log#_options">docs</a>)</label>
+        <label for="advanced">(<a href="https://git-scm.com/docs/pretty-formats#:~:text=no%2Dabbrev.-,format%3A%3Cformat%2Dstring%3E,-The%20format%3A%3Cformat">docs</a>)</label>
         <p></p>
         <label for="hs">Hash Separator: </label>
         <input type="text" id ="hs" placeholder="e.g. ##" oninput="generate()"/>
@@ -80,17 +80,19 @@
         <h3><b>Options: </b></h3>
         <label for="args">Arguments: </label>
         <input type="text" id ="args" placeholder="other arguments" oninput="generate()"/>
-        <label for="args">(<a href="https://git-scm.com/docs/pretty-formats#:~:text=no%2Dabbrev.-,format%3A%3Cformat%2Dstring%3E,-The%20format%3A%3Cformat">docs</a>)</label>
+        <label for="args">(<a href="https://git-scm.com/docs/git-log#_options">docs</a>)</label>
         <p></p>
         <input type="checkbox" id ="copy" oninput="generate()"/>
         <label for="copy">Auto copy log to clipboard on Windows</label>
 
 
-        <h3><b>Output: </b></h3>
+        <h3><b>Command: </b></h3>
         <p title="Click to copy command" id="command" onclick="copy()">Command will be shown here. Click to copy.</p>
 
-        <p>Step 2 (optional): Link hash to commit on remote repository</p>
-        <p>Enter path to commit on remote repository (e.g. https://github.com/user/repo/commit)</p>
+        <h3><b>Link: </b></h3>
+        <p>Adds hyperlinks to commits in remote repository. Takes a base url (e.g. https://github.com/user/repo/commit/) and adds the commit hash for each line to the end.</p>
+        <p>Hashes must be surrounded by hash separators, or special sequences of characters that are not found anywhere else in the log.</p>
+        <p>Hash separators can be added to the log by specifying them in the format section when generating a command.</p>
         <label for="url">Base URL: </label>
         <input type="url" id="url" oninput="format()"/>
         <label for="fhs">Hash Separator: </label>
@@ -104,11 +106,14 @@
         </select>
         <input type="checkbox" id ="deletespace" oninput="format()" checked = "true" hidden/>
         <label for="deletespace" id="dslabel" hidden>Remove spaces around hash and replace with single space</label>
-        <p>Output from command generated above</p>
+        <p>Git log:</p>
         <textarea id="loginput"  oninput="format()" rows="1"></textarea>
 
         <h3><b>Output: </b></h3>
-        <pre id="formatted"> </pre>
+        <div id="code"><pre id="formatted"> </pre></div>
+
+        <h3><b>HTML: </b></h3>
+        <pre id="htmlcode"> </pre>
     </body>
 </html>
 <script>
@@ -230,6 +235,7 @@
                 }
             }
         }
+        document.getElementById("htmlcode").textContent = pre.innerHTML;
     }
     function copy(){
         let text = document.getElementById("command").innerHTML;
