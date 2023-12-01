@@ -91,7 +91,7 @@
         <p></p>
         <label for="hs">Hash Separator: </label>
         <input type="text" id ="hs" placeholder="e.g. ##" oninput="generate()"/>
-        <label for="hs">(see below)</label>
+        <label for="hs">(see link section below)</label>
         <p>(Leave all blank for default)</p>
 
         <h3><b>Options: </b></h3>
@@ -109,7 +109,7 @@
         <h3><b>Link: </b></h3>
         <p>Adds hyperlinks to commits in remote repository. Takes a base url (e.g. https://github.com/user/repo/commit/) and adds the commit hash for each line to the end.</p>
         <p>Hashes must be surrounded by hash separators, or special sequences of characters that are not found anywhere else in the log.</p>
-        <p>Hash separators can be added to the log by specifying them in the format section when generating a command.</p>
+        <p>Hash separators can be added to the log by specifying them in the format section above when generating a command.</p>
         <label for="url">Base URL: </label>
         <input type="url" id="url" oninput="format()"/>
         <label for="fhs">Hash Separator: </label>
@@ -117,9 +117,9 @@
         <p></p>
         <label for="linking">Link: </label>
         <select name="linking" id="linking" oninput="format()">
-            <option value ="hash" selected>Hash only</option>
+            <option value ="hash" selected>Hash</option>
             <option value="whole">Entire Line</option>
-            <option value="hashdelete">Entire line + remove hash</option>
+            <option value="hashdelete">Entire Line + Remove Hash</option>
         </select>
         <input type="checkbox" id ="deletespace" oninput="format()" checked = "true" hidden/>
         <label for="deletespace" id="dslabel" hidden>Remove spaces around hash and replace with single space</label>
